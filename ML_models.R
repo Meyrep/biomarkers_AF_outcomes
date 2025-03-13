@@ -1,6 +1,6 @@
 #--ML MODELS--------------------------------------------------------------------
 # Author: Pascal B. Meyre
-# Date: 05/18/24
+# Date: 05/18/24, last update: 03/13/25
 # Location: Reinach, Baselland, Switzerland
 
 # Use cleaned and imputed dataset of SWISS.BEAT.biomarker.cleaned.imputed.csv
@@ -36,35 +36,47 @@ for (col in biomarkers) {
 
 # Relabel variables
 # Center
-dat$center <- ifelse(dat$center == "Universit\xe4tsspital Basel", 1,
-                     ifelse(dat$center == "Inselspital, Universit\xe4tsspital Bern", 2,
-                            ifelse(dat$center == "Triemli Spital Z\xfcrich", 3, 
-                                   ifelse(dat$center == "Kantonsspital Baden", 4,
-                                          ifelse(dat$center == "Kantonsspital St. Gallen", 5,
-                                                 ifelse(dat$center == "Cardiocentro Lugano", 6,
-                                                        ifelse(dat$center == "EOC Lugano", 7,
-                                                               ifelse(dat$center == "Luzerner Kantonsspital", 8,
-                                                                      ifelse(dat$center == "H\xf4pital Cantonal Fribourg", 9,
-                                                                             ifelse(dat$center == "HUG", 10,
-                                                                                    ifelse(dat$center == "B\xfcrgerspital Solothurn", 11,
-                                                                                           ifelse(dat$center == "CHUV", 12,
-                                                                                                  ifelse(dat$center == "Kantonsspital Luzern", 8,
-                                                                                                         ifelse(dat$center == "Regionalspital Lugano", 7,
-                                                                                                                ifelse(dat$center == "EOC Bellinzona", 13,
-                                                                                                                       ifelse(dat$center == "Regionalspital Bellinzona", 13,
-                                                                                                                              ifelse(dat$center == "HUG Gen\xe8ve", 11,
-                                                                                                                                     ifelse(dat$center == "Hirslanden Klinik St. Anna, Luzern", 14,
-                                                                                                                                            ifelse(dat$center == "CHUV Lausanne", 12,
-                                                                                                                                                   ifelse(dat$center == "Universit\xe4tsspital Z\xfcrich", 15, NA))))))))))))))))))))
+# Define the mapping of center names to numeric values
+center_map <- c(
+  "Universitätsspital Basel" = 1,
+  "Inselspital, Universitätsspital Bern" = 2,
+  "Triemli Spital Zürich" = 3,
+  "Kantonsspital Baden" = 4,
+  "Kantonsspital St. Gallen" = 5,
+  "Cardiocentro Lugano" = 6,
+  "EOC Lugano" = 7,
+  "Luzerner Kantonsspital" = 8,
+  "Hôpital Cantonal Fribourg" = 9,
+  "HUG" = 10,
+  "Bürgerspital Solothurn" = 11,
+  "CHUV" = 12,
+  "Kantonsspital Luzern" = 8,
+  "Regionalspital Lugano" = 7,
+  "EOC Bellinzona" = 13,
+  "Regionalspital Bellinzona" = 13,
+  "HUG Genève" = 11,
+  "Hirslanden Klinik St. Anna, Luzern" = 14,
+  "CHUV Lausanne" = 12,
+  "Universitätsspital Zürich" = 15
+)
+
+# Relabel the 'center' variable using the mapping
+dat$center <- center_map[dat$center]
 
 # Herkunft
-dat$herkunft <- ifelse(dat$herkunft == "Mitteleuropa", 1,
-                       ifelse(dat$herkunft == "S\xfcdeuropa", 2,
-                              ifelse(dat$herkunft == "Nordeuropa", 3,
-                                     ifelse(dat$herkunft == "Osteuropa", 4,
-                                            ifelse(dat$herkunft == "andere", 5,
-                                                   ifelse(dat$herkunft == "Mittel-/S\xfcdamerika", 6,
-                                                          ifelse(dat$herkunft == "Nordamerika/weiss", 7,NA)))))))
+# Define the mapping of 'herkunft' values to numeric values
+herkunft_map <- c(
+  "Mitteleuropa" = 1,
+  "Südeuropa" = 2,
+  "Nordeuropa" = 3,
+  "Osteuropa" = 4,
+  "andere" = 5,
+  "Mittel-/Südamerika" = 6,
+  "Nordamerika/weiss" = 7
+)
+
+# Relabel the 'herkunft' variable using the mapping
+dat$herkunft <- herkunft_map[dat$herkunft]
 
 # AF type
 dat$vhf.typ.aktuell.bl <- ifelse(dat$vhf.typ.aktuell.bl == "paroxysmal", 1,
@@ -72,62 +84,98 @@ dat$vhf.typ.aktuell.bl <- ifelse(dat$vhf.typ.aktuell.bl == "paroxysmal", 1,
                                         ifelse(dat$vhf.typ.aktuell.bl == "permanent", 3, NA)))
 
 # Alcohol beer
-dat$alkohol.bier <- ifelse(dat$alkohol.bier == "6+ pro Tag", 1,
-                           ifelse(dat$alkohol.bier == "4-5 pro Tag", 2,
-                                  ifelse(dat$alkohol.bier == "2-3 pro Tag", 3,
-                                         ifelse(dat$alkohol.bier == "1 pro Tag", 4,
-                                                ifelse(dat$alkohol.bier == "5-6 pro Woche", 5,
-                                                       ifelse(dat$alkohol.bier == "2-4 pro Woche", 6,
-                                                              ifelse(dat$alkohol.bier == "1 pro Woche", 7,
-                                                                     ifelse(dat$alkohol.bier == "1-3 pro Monat", 8,
-                                                                            ifelse(dat$alkohol.bier == "nie oder weniger als 1 Monat", 9, NA)))))))))
+# Define the mapping of alcohol consumption categories to numeric values
+alkohol_bier_map <- c(
+  "6+ pro Tag" = 1,
+  "4-5 pro Tag" = 2,
+  "2-3 pro Tag" = 3,
+  "1 pro Tag" = 4,
+  "5-6 pro Woche" = 5,
+  "2-4 pro Woche" = 6,
+  "1 pro Woche" = 7,
+  "1-3 pro Monat" = 8,
+  "nie oder weniger als 1 Monat" = 9
+)
+
+# Relabel the 'alkohol.bier' variable using the mapping
+dat$alkohol.bier <- alkohol_bier_map[dat$alkohol.bier]
 
 # Alcohol red wine
-dat$alkohol.rotwein <- ifelse(dat$alkohol.rotwein == "6+ pro Tag", 1,
-                              ifelse(dat$alkohol.rotwein == "4-5 pro Tag", 2,
-                                     ifelse(dat$alkohol.rotwein == "2-3 pro Tag", 3,
-                                            ifelse(dat$alkohol.rotwein == "1 pro Tag", 4,
-                                                   ifelse(dat$alkohol.rotwein == "5-6 pro Woche", 5,
-                                                          ifelse(dat$alkohol.rotwein == "2-4 pro Woche", 6,
-                                                                 ifelse(dat$alkohol.rotwein == "1 pro Woche", 7,
-                                                                        ifelse(dat$alkohol.rotwein == "1-3 pro Monat", 8,
-                                                                               ifelse(dat$alkohol.rotwein == "nie oder weniger als 1 Monat", 9, NA)))))))))
+# Define the mapping of alcohol consumption categories to numeric values for 'rotwein'
+alkohol_rotwein_map <- c(
+  "6+ pro Tag" = 1,
+  "4-5 pro Tag" = 2,
+  "2-3 pro Tag" = 3,
+  "1 pro Tag" = 4,
+  "5-6 pro Woche" = 5,
+  "2-4 pro Woche" = 6,
+  "1 pro Woche" = 7,
+  "1-3 pro Monat" = 8,
+  "nie oder weniger als 1 Monat" = 9
+)
+
+# Relabel the 'alkohol.rotwein' variable using the mapping
+dat$alkohol.rotwein <- alkohol_rotwein_map[dat$alkohol.rotwein]
 
 # Alcohol white wine
-dat$alkohol.weisswein <- ifelse(dat$alkohol.weisswein == "6+ pro Tag", 1,
-                                ifelse(dat$alkohol.weisswein == "4-5 pro Tag", 2,
-                                       ifelse(dat$alkohol.weisswein == "2-3 pro Tag", 3,
-                                              ifelse(dat$alkohol.weisswein == "1 pro Tag", 4,
-                                                     ifelse(dat$alkohol.weisswein == "5-6 pro Woche", 5,
-                                                            ifelse(dat$alkohol.weisswein == "2-4 pro Woche", 6,
-                                                                   ifelse(dat$alkohol.weisswein == "1 pro Woche", 7,
-                                                                          ifelse(dat$alkohol.weisswein == "1-3 pro Monat", 8,
-                                                                                 ifelse(dat$alkohol.weisswein == "nie oder weniger als 1 Monat", 9, NA)))))))))
+# Define the mapping of alcohol consumption categories to numeric values for 'weisswein'
+alkohol_weisswein_map <- c(
+  "6+ pro Tag" = 1,
+  "4-5 pro Tag" = 2,
+  "2-3 pro Tag" = 3,
+  "1 pro Tag" = 4,
+  "5-6 pro Woche" = 5,
+  "2-4 pro Woche" = 6,
+  "1 pro Woche" = 7,
+  "1-3 pro Monat" = 8,
+  "nie oder weniger als 1 Monat" = 9
+)
+
+# Relabel the 'alkohol.weisswein' variable using the mapping
+dat$alkohol.weisswein <- alkohol_weisswein_map[dat$alkohol.weisswein]
 
 # Alcohol liquor
-dat$alkohol.schnaps <- ifelse(dat$alkohol.schnaps == "6+ pro Tag", 1,
-                              ifelse(dat$alkohol.schnaps == "2-3 pro Tag", 2,
-                                     ifelse(dat$alkohol.schnaps == "1 pro Tag", 3,
-                                            ifelse(dat$alkohol.schnaps == "5-6 pro Woche", 4,
-                                                   ifelse(dat$alkohol.schnaps == "2-4 pro Woche", 5,
-                                                          ifelse(dat$alkohol.schnaps == "1 pro Woche", 6,
-                                                                 ifelse(dat$alkohol.schnaps == "1-3 pro Monat", 7,
-                                                                        ifelse(dat$alkohol.schnaps == "nie oder weniger als 1 Monat", 8, NA))))))))
+# Define the mapping of alcohol consumption categories to numeric values for 'schnaps'
+alkohol_schnaps_map <- c(
+  "6+ pro Tag" = 1,
+  "2-3 pro Tag" = 2,
+  "1 pro Tag" = 3,
+  "5-6 pro Woche" = 4,
+  "2-4 pro Woche" = 5,
+  "1 pro Woche" = 6,
+  "1-3 pro Monat" = 7,
+  "nie oder weniger als 1 Monat" = 8
+)
+
+# Relabel the 'alkohol.schnaps' variable using the mapping
+dat$alkohol.schnaps <- alkohol_schnaps_map[dat$alkohol.schnaps]
 
 # AF duration
-dat$vhf.episoden.dauer <- ifelse(dat$vhf.episoden.dauer == "dauerhaft", 1,
-                                 ifelse(dat$vhf.episoden.dauer == "Tage", 2,
-                                        ifelse(dat$vhf.episoden.dauer == "Stunden", 3,
-                                               ifelse(dat$vhf.episoden.dauer == "Minuten", 4,
-                                                      ifelse(dat$vhf.episoden.dauer == "keine mehr", 5, NA)))))
+# Define the mapping of 'vhf.episoden.dauer' categories to numeric values
+vhf_episoden_dauer_map <- c(
+  "dauerhaft" = 1,
+  "Tage" = 2,
+  "Stunden" = 3,
+  "Minuten" = 4,
+  "keine mehr" = 5
+)
+
+# Relabel the 'vhf.episoden.dauer' variable using the mapping
+dat$vhf.episoden.dauer <- vhf_episoden_dauer_map[dat$vhf.episoden.dauer]
 
 # AF nr. of episodes
-dat$vhf.episoden.anz <- ifelse(dat$vhf.episoden.anz == "dauerhaft", 1,
-                               ifelse(dat$vhf.episoden.anz == ">=1x pro Woche", 2,
-                                      ifelse(dat$vhf.episoden.anz == "=1x pro Woche", 3,
-                                             ifelse(dat$vhf.episoden.anz == "<1x pro Woche aber >1x pro Monat", 4,
-                                                    ifelse(dat$vhf.episoden.anz == "<1x pro Monat", 5,
-                                                           ifelse(dat$vhf.episoden.anz == "keine mehr", 6, NA))))))
+# Define the mapping of 'vhf.episoden.anz' categories to numeric values
+vhf_episoden_anz_map <- c(
+  "dauerhaft" = 1,
+  ">=1x pro Woche" = 2,
+  "=1x pro Woche" = 3,
+  "<1x pro Woche aber >1x pro Monat" = 4,
+  "<1x pro Monat" = 5,
+  "keine mehr" = 6
+)
+
+# Relabel the 'vhf.episoden.anz' variable using the mapping
+dat$vhf.episoden.anz <- vhf_episoden_anz_map[dat$vhf.episoden.anz]
 
 # AFlutter
 dat$vorhofflattern <- ifelse(dat$vorhofflattern == "Yes", 1,
@@ -200,12 +248,18 @@ dat$fam.khk <- ifelse(dat$fam.khk == "Ja", 1,
                              ifelse(dat$fam.khk == "unbekannt", 0, NA)))
 
 # Rhythm on ECG
-dat$ecg.rhythm.algo <- ifelse(dat$ecg.rhythm.algo == "AF", 1,
-                              ifelse(dat$ecg.rhythm.algo == "Fibrillation", 1,
-                                     ifelse(dat$ecg.rhythm.algo == "Flutter", 2, 
-                                            ifelse(dat$ecg.rhythm.algo == "Sinus", 3,
-                                                   ifelse(dat$ecg.rhythm.algo == "Other", 4, 
-                                                          ifelse(dat$ecg.rhythm.algo == "unclear", 4, NA))))))
+# Define the mapping of 'ecg.rhythm.algo' categories to numeric values
+ecg_rhythm_map <- c(
+  "AF" = 1,
+  "Fibrillation" = 1,
+  "Flutter" = 2,
+  "Sinus" = 3,
+  "Other" = 4,
+  "unclear" = 4
+)
+
+# Relabel the 'ecg.rhythm.algo' variable using the mapping
+dat$ecg.rhythm.algo <- ecg_rhythm_map[dat$ecg.rhythm.algo]
 
 ################################################################################
 # Composite outcome
@@ -331,54 +385,19 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", 
+                  "Brother AF", "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$composite <- as.numeric(features$composite == 1)
 
@@ -474,66 +493,20 @@ features <- data %>%
 
 features$composite <- as.factor(features$composite)
 
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "SBP"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior.stroke.TIA"
-colnames(features)[8] <- "Heart.failure"
-colnames(features)[9] <- "Renal.failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study.center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF.type"
-colnames(features)[14] <- "Beer.drinker"
-colnames(features)[15] <- "Red.wine.drinker"
-colnames(features)[16] <- "White.wine.drinker"
-colnames(features)[17] <- "Liquor.drinker"
-colnames(features)[18] <- "AF.episode.duration"
-colnames(features)[19] <- "Nr.of.AF.episodes"
-colnames(features)[20] <- "Atrial.flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet.therapy"
-colnames(features)[24] <- "Illicit.drugs"
-colnames(features)[25] <- "Prior.CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal.AF"
-colnames(features)[31] <- "Brother.AF"
-colnames(features)[32] <- "Maternal.AF"
-colnames(features)[33] <- "Sister.AF"
-colnames(features)[34] <- "Familial.hypertension"
-colnames(features)[35] <- "Familial.diabetes"
-colnames(features)[36] <- "Familial.obesity"
-colnames(features)[37] <- "Familial.CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart.rate"
-colnames(features)[41] <- "DBP"
-colnames(features)[42] <- "Rhythm.at.baseline"
-colnames(features)[43] <- "Sleep.apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior.MI"
-colnames(features)[47] <- "Systemic.embolism"
-colnames(features)[48] <- "Prior.major.bleeding"
-colnames(features)[49] <- "ANG.2"
-colnames(features)[50] <- "d.dimer"
-colnames(features)[51] <- "cystatin.C"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF.15"
-colnames(features)[54] <- "hs.CRP"
-colnames(features)[55] <- "IGFBP.7"
-colnames(features)[56] <- "IL.6"
-colnames(features)[57] <- "NT.proBNP"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "hsTropT"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "SBP", "Diabetes", "Prior.stroke.TIA", 
+                  "Heart.failure", "Renal.failure", "CAD", "Study.center", "Ethnicity", 
+                  "AF.type", "Beer.drinker", "Red.wine.drinker", "White.wine.drinker", 
+                  "Liquor.drinker", "AF.episode.duration", "Nr.of.AF.episodes", "Atrial.flutter", 
+                  "Aspirin", "TCA", "Antiplatelet.therapy", "Illicit.drugs", "Prior.CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal.AF", 
+                  "Brother.AF", "Maternal.AF", "Sister.AF", "Familial.hypertension", "Familial.diabetes", 
+                  "Familial.obesity", "Familial.CAD", "Height", "Weight", "Heart.rate", "DBP", 
+                  "Rhythm.at.baseline", "Sleep.apnea", "Hypertension", "PAD", "Prior.MI", 
+                  "Systemic.embolism", "Prior.major.bleeding", "ANG.2", "d.dimer", "cystatin.C", 
+                  "ALAT", "GDF.15", "hs.CRP", "IGFBP.7", "IL.6", "NT.proBNP", "OPN", "hsTropT", "eGFR")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 # Train random forest model
 set.seed(123)
@@ -634,66 +607,20 @@ ggplot(var_importance, aes(x = Importance, y = reorder(Variables, Importance))) 
         panel.grid.major.y = element_line(linetype = "dotted", color = "grey"))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "SBP"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG-2"
-colnames(features)[50] <- "d-dimer"
-colnames(features)[51] <- "cystatin C"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF-15"
-colnames(features)[54] <- "hs-CRP"
-colnames(features)[55] <- "IGFBP-7"
-colnames(features)[56] <- "IL-6"
-colnames(features)[57] <- "NT-proBNP"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "hsTropT"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "SBP", "Diabetes", "Prior.stroke.TIA", 
+                  "Heart.failure", "Renal.failure", "CAD", "Study.center", "Ethnicity", 
+                  "AF.type", "Beer.drinker", "Red.wine.drinker", "White.wine.drinker", 
+                  "Liquor.drinker", "AF.episode.duration", "Nr.of.AF.episodes", "Atrial.flutter", 
+                  "Aspirin", "TCA", "Antiplatelet.therapy", "Illicit.drugs", "Prior.CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal.AF", 
+                  "Brother.AF", "Maternal.AF", "Sister.AF", "Familial.hypertension", "Familial.diabetes", 
+                  "Familial.obesity", "Familial.CAD", "Height", "Weight", "Heart.rate", "DBP", 
+                  "Rhythm.at.baseline", "Sleep.apnea", "Hypertension", "PAD", "Prior.MI", 
+                  "Systemic.embolism", "Prior.major.bleeding", "ANG.2", "d.dimer", "cystatin.C", 
+                  "ALAT", "GDF.15", "hs.CRP", "IGFBP.7", "IL.6", "NT.proBNP", "OPN", "hsTropT", "eGFR")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$composite <- as.numeric(features$composite == 1)
 
@@ -850,54 +777,19 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$heart.failure <- as.numeric(features$heart.failure == 1)
 
@@ -1056,66 +948,20 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", "ANG2", "DDI2H", 
+                  "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", "PROBNPII", "OPN", "TNTHS", "eGFR")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$heart.failure <- as.numeric(features$heart.failure == 1)
 
@@ -1273,54 +1119,19 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$major.bleed <- as.numeric(features$major.bleed == 1)
 
@@ -1479,66 +1290,21 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", 
+                  "ANG2", "DDI2H", "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", 
+                  "PROBNPII", "OPN", "TNTHS", "eGFR")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$major.bleed <- as.numeric(features$major.bleed == 1)
 
@@ -1696,54 +1462,19 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding")
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$ischemic.stroke <- as.numeric(features$ischemic.stroke == 1)
 
@@ -1902,66 +1633,20 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", "ANG2", "DDI2H", 
+                  "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", "PROBNPII", "OPN", "TNTHS", "eGFR")
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$ischemic.stroke <- as.numeric(features$ischemic.stroke == 1)
 
@@ -2119,54 +1804,21 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c(
+  "Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding"
+)
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$stroke <- as.numeric(features$stroke == 1)
 
@@ -2325,66 +1977,23 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c(
+  "Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", 
+  "ANG2", "DDI2H", "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", 
+  "PROBNPII", "OPN", "TNTHS", "eGFR"
+)
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$stroke <- as.numeric(features$stroke == 1)
 
@@ -2542,54 +2151,21 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c(
+  "Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding"
+)
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$mi <- as.numeric(features$mi == 1)
 
@@ -2748,66 +2324,23 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c(
+  "Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", 
+  "ANG2", "DDI2H", "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", 
+  "PROBNPII", "OPN", "TNTHS", "eGFR"
+)
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$mi <- as.numeric(features$mi == 1)
 
@@ -2965,54 +2498,21 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c(
+  "Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding"
+)
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$death.cardiac <- as.numeric(features$death.cardiac == 1)
 
@@ -3171,66 +2671,20 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", "ANG2", "DDI2H", 
+                  "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", "PROBNPII", "OPN", "TNTHS", "eGFR")
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$death.cardiac <- as.numeric(features$death.cardiac == 1)
 
@@ -3388,54 +2842,19 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding")
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$death.any <- as.numeric(features$death.any == 1)
 
@@ -3594,66 +3013,20 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", "ANG2", "DDI2H", 
+                  "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", "PROBNPII", "OPN", "TNTHS", "eGFR")
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$death.any <- as.numeric(features$death.any == 1)
 
@@ -3811,54 +3184,19 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding")
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$bleed.any <- as.numeric(features$bleed.any == 1)
 
@@ -4017,66 +3355,21 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", 
+                  "ANG2", "DDI2H", "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", 
+                  "PROBNPII", "OPN", "TNTHS", "eGFR")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$bleed.any <- as.numeric(features$bleed.any == 1)
 
@@ -4234,54 +3527,19 @@ ci_auc <- ci.auc(roc_curve)
 print(paste("95% CI for AUC:", ci_auc[1], "-", ci_auc[3]))
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding")
+
+# Assign the new column names to the dataframe
+colnames(features) <- new_colnames
 
 features$minor.bleed <- as.numeric(features$minor.bleed == 1)
 
@@ -4440,66 +3698,21 @@ delong_test <- roc.test(auc_base, auc_biomarkers)
 print(delong_test)
 
 #### XGBoost ####---------------------------------------------------------------
-colnames(features)[1] <- "Age"
-colnames(features)[2] <- "Sex"
-colnames(features)[3] <- "BMI"
-colnames(features)[4] <- "Smoker"
-colnames(features)[5] <- "Systolic blood pressure"
-colnames(features)[6] <- "Diabetes"
-colnames(features)[7] <- "Prior stroke/TIA"
-colnames(features)[8] <- "Heart failure"
-colnames(features)[9] <- "Renal failure"
-colnames(features)[10] <- "CAD"
-colnames(features)[11] <- "Study center"
-colnames(features)[12] <- "Ethnicity"
-colnames(features)[13] <- "AF type"
-colnames(features)[14] <- "Beer drinker"
-colnames(features)[15] <- "Red wine drinker"
-colnames(features)[16] <- "White wine drinker"
-colnames(features)[17] <- "Liquor drinker"
-colnames(features)[18] <- "AF episode duration"
-colnames(features)[19] <- "Nr. of AF episodes"
-colnames(features)[20] <- "Atrial flutter"
-colnames(features)[21] <- "Aspirin"
-colnames(features)[22] <- "TCA"
-colnames(features)[23] <- "Antiplatelet therapy"
-colnames(features)[24] <- "Illicit drugs"
-colnames(features)[25] <- "Prior CABG"
-colnames(features)[26] <- "Hyperthyroidism"
-colnames(features)[27] <- "Hypothyroidism"
-colnames(features)[28] <- "Cancer"
-colnames(features)[29] <- "VTE"
-colnames(features)[30] <- "Paternal AF"
-colnames(features)[31] <- "Brother AF"
-colnames(features)[32] <- "Maternal AF"
-colnames(features)[33] <- "Sister AF"
-colnames(features)[34] <- "Familial hypertension"
-colnames(features)[35] <- "Familial diabetes"
-colnames(features)[36] <- "Familial obesity"
-colnames(features)[37] <- "Familial CAD"
-colnames(features)[38] <- "Height"
-colnames(features)[39] <- "Weight"
-colnames(features)[40] <- "Heart rate"
-colnames(features)[41] <- "Diastolic blood pressure"
-colnames(features)[42] <- "Rhythm at baseline"
-colnames(features)[43] <- "Sleep apnea"
-colnames(features)[44] <- "Hypertension"
-colnames(features)[45] <- "PAD"
-colnames(features)[46] <- "Prior MI"
-colnames(features)[47] <- "Systemic embolism"
-colnames(features)[48] <- "Prior major bleeding"
-colnames(features)[49] <- "ANG2"
-colnames(features)[50] <- "DDI2H"
-colnames(features)[51] <- "CYSC"
-colnames(features)[52] <- "ALAT"
-colnames(features)[53] <- "GDF15"
-colnames(features)[54] <- "CRPHS"
-colnames(features)[55] <- "IGFBP7"
-colnames(features)[56] <- "IL6"
-colnames(features)[57] <- "PROBNPII"
-colnames(features)[58] <- "OPN"
-colnames(features)[59] <- "TNTHS"
-colnames(features)[60] <- "eGFR"
+new_colnames <- c("Age", "Sex", "BMI", "Smoker", "Systolic blood pressure", "Diabetes", 
+                  "Prior stroke/TIA", "Heart failure", "Renal failure", "CAD", "Study center", 
+                  "Ethnicity", "AF type", "Beer drinker", "Red wine drinker", "White wine drinker", 
+                  "Liquor drinker", "AF episode duration", "Nr. of AF episodes", "Atrial flutter", 
+                  "Aspirin", "TCA", "Antiplatelet therapy", "Illicit drugs", "Prior CABG", 
+                  "Hyperthyroidism", "Hypothyroidism", "Cancer", "VTE", "Paternal AF", "Brother AF", 
+                  "Maternal AF", "Sister AF", "Familial hypertension", "Familial diabetes", 
+                  "Familial obesity", "Familial CAD", "Height", "Weight", "Heart rate", 
+                  "Diastolic blood pressure", "Rhythm at baseline", "Sleep apnea", "Hypertension", 
+                  "PAD", "Prior MI", "Systemic embolism", "Prior major bleeding", 
+                  "ANG2", "DDI2H", "CYSC", "ALAT", "GDF15", "CRPHS", "IGFBP7", "IL6", 
+                  "PROBNPII", "OPN", "TNTHS", "eGFR")
+
+# Assign the new column names to the features data frame
+colnames(features) <- new_colnames
 
 features$minor.bleed <- as.numeric(features$minor.bleed == 1)
 
